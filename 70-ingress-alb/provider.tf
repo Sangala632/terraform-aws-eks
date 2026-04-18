@@ -2,12 +2,12 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      version = "5.98.0"
+      version = "6.24.0"
     }
   }
 
   backend "s3" {
-    bucket = "84s-remote-state-dev"
+    bucket = "terraform-dev-state-remote"
     key    = "roboshop-dev-frontend-alb"
     region = "us-east-1"
     encrypt        = true
