@@ -56,6 +56,23 @@ pipeline {
                 }
             }
         }
+        stage('Verify AWS Identity') {
+    steps {
+        script {
+            withAWS(credentials: 'aws-cerds', region: "${REGION}") {
+                sh '''
+                    echo "=== WHO AM I (Jenkins) ==="
+                    aws sts get-caller-identity
+
+                    echo "=== REGION ==="
+                    aws configure get region || echo "No region configured"
+
+                    echo "=== VPCs visible ==="
+                    aws ec2 describe-vpcs --query "Vpcs[*].VpcId"
+                '''
+            }
+        }
+    }
 
 
     }
