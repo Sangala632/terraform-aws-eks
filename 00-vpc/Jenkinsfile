@@ -20,6 +20,7 @@ pipeline {
                 script {
                     withAWS(credentials: 'aws-cerds', region: "${REGION}") {
                         sh """
+                            cd 00-vpc
                             terraform init -reconfigure
                         """
                     }
