@@ -17,10 +17,11 @@ pipeline {
         stage('Init') {
             steps {
                 script {
-                    withAWS(credentials: 'aws-cerds', region: "${REGION}") 
+                    withAWS(credentials: 'aws-cerds', region: "${REGION}") {
                         sh """
                             terraform init -reconfigure
                         """
+                    }
                 }
             }
         }
