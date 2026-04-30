@@ -40,12 +40,12 @@ pipeline {
             }
         }
         stage('terraform apply') {
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+                submitter "alice,bob"
+            }
             steps {
-                input {
-                    message "Should we continue?"
-                    ok "Yes, we should."
-                    submitter "alice,bob"
-                }
                 script {
                     withAWS(credentials: 'aws-cerds', region: "${REGION}") {
                         sh """
