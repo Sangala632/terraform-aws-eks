@@ -29,9 +29,6 @@ pipeline {
 
                             echo "=== REGION ==="
                             aws configure get region || echo "No region configured"
-
-                            echo "=== VPCs visible ==="
-                            aws ec2 describe-vpcs --query "Vpcs[*].VpcId"
                         '''
                     }
                 }
@@ -41,7 +38,7 @@ pipeline {
         stage('Init') {
             steps {
                 withAWS(credentials: 'aws-cerds', region: "${REGION}") {
-                    dir('00-vpc') {
+                    dir('10-sg') {
                         sh 'terraform init -reconfigure'
                     }
                 }
@@ -51,7 +48,7 @@ pipeline {
         stage('terraform plan') {
             steps {
                 withAWS(credentials: 'aws-cerds', region: "${REGION}") {
-                    dir('00-vpc') {
+                    dir('10-sg') {
                         sh 'terraform plan'
                     }
                 }
@@ -59,25 +56,12 @@ pipeline {
         }
 
         stage('terraform apply') {
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-                submitter "alice,bob"
-            }
             steps {
                 withAWS(credentials: 'aws-cerds', region: "${REGION}") {
-                    dir('00-vpc') {
+                    dir('10-sg') {
                         sh 'terraform apply -auto-approve'
                     }
                 }
-            }
-        }
-
-        stage('Trigger SG') {
-            steps {
-                build job: '10-sg',
-                wait: true,
-                propagate: true
             }
         }
 

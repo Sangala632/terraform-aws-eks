@@ -73,14 +73,6 @@ pipeline {
             }
         }
 
-        stage('Trigger SG') {
-            steps {
-                build job: '10-sg',
-                wait: true,
-                propagate: true
-            }
-        }
-
     } 
 
     post { 
