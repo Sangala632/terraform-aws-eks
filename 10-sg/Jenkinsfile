@@ -70,8 +70,8 @@ pipeline {
                 stage('Trigger BASTION') {
                     steps {
                         build job: '20-bastion',
-                        wait: false,
-                        propagate: false
+                        wait: false, // VPC will not wait for SG pipeline completion
+                        propagate: false // even SG fails VPC will not be effected
                     }
                 }
                 stage('Trigger ACM') {
