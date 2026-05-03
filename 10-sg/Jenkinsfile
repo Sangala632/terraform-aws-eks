@@ -77,8 +77,8 @@ pipeline {
                 stage('Trigger ACM') {
                     steps {
                         build job: '60-acm',
-                        wait: true,
-                        propagate: true
+                        wait: false,
+                        propagate: false
                     }
                 }
                 stage('Trigger EKS') {
