@@ -22,7 +22,7 @@ pipeline {
         stage('Verify AWS Identity') {
             steps {
                 script {
-                    withAWS(credentials: 'aws-cerds', region: "${REGION}") {
+                    withAWS(credentials: 'aws-creds', region: "${REGION}") {
                         sh '''
                             echo "=== WHO AM I (Jenkins) ==="
                             aws sts get-caller-identity
@@ -40,7 +40,7 @@ pipeline {
 
         stage('Init') {
             steps {
-                withAWS(credentials: 'aws-cerds', region: "${REGION}") {
+                withAWS(credentials: 'aws-creds', region: "${REGION}") {
                     dir('00-vpc') {
                         sh 'terraform init -reconfigure'
                     }
@@ -50,7 +50,7 @@ pipeline {
 
         stage('terraform plan') {
             steps {
-                withAWS(credentials: 'aws-cerds', region: "${REGION}") {
+                withAWS(credentials: 'aws-creds', region: "${REGION}") {
                     dir('00-vpc') {
                         sh 'terraform plan'
                     }
@@ -65,7 +65,7 @@ pipeline {
                 submitter "alice,bob"
             }
             steps {
-                withAWS(credentials: 'aws-cerds', region: "${REGION}") {
+                withAWS(credentials: 'aws-creds', region: "${REGION}") {
                     dir('00-vpc') {
                         sh 'terraform apply -auto-approve'
                     }
