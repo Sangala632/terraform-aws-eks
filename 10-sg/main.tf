@@ -145,7 +145,7 @@ resource "aws_security_group_rule" "eks_node_bastion" {
   security_group_id = module.eks_node.sg_id  
 }
 
-resource "aws_security_group_rule" "eks_node_vpn" {
+resource "aws_security_group_rule" "eks_node_vpc" {
   type              = "ingress"
   from_port         = 0  
   to_port           = 0
