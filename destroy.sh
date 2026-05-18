@@ -14,6 +14,9 @@ cd ../60-acm && terraform destroy -auto-approve
 echo "Creating ecr..."
 cd ../30-ecr && terraform destroy -auto-approve
 
+echo "Creating ecr..."
+cd ../40-IAM && terraform destroy -auto-approve
+
 echo "Destroying Bastion..."
 cd ../20-bastion && terraform destroy -auto-approve
 
