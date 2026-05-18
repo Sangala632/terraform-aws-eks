@@ -18,8 +18,8 @@ cd ../30-ecr && terraform apply -auto-approve
 echo "Creating ACM certificate..."
 cd ../60-acm && terraform apply -auto-approve
 
-echo "Creating ACM certificate..."
-cd ../40-IAM && terraform apply -auto-approve
+# echo "Creating ACM certificate..."
+# cd ../40-IAM && terraform apply -auto-approve
 
 echo "Creating ALB..."
 cd ../70-ingress-alb && terraform apply -auto-approve
