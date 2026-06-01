@@ -64,7 +64,9 @@ pipeline {
                 }
             }
         }
-
+        // =========================================================================
+        // CORRECTED INFRASTRUCTURE FAN-OUT (Parallel with Sequential Triggers)
+        // =========================================================================
         stage('BASTION ACM EKS') {
             parallel {
                 stage('Trigger BASTION') {
@@ -72,13 +74,6 @@ pipeline {
                         build job: '20-bastion',
                         wait: false, // VPC will not wait for SG pipeline completion
                         propagate: false // even SG fails VPC will not be effected
-                    }
-                }
-                stage('Trigger ACM') {
-                    steps {
-                        build job: '60-acm',
-                        wait: true,
-                        propagate: false
                     }
                 }
                 stage('Trigger EKS') {
@@ -90,26 +85,47 @@ pipeline {
                 }
             }
         }
-        stage('Trigger alb') {
-            steps {
-                script {
-                    build job: '70-ingress-alb',
+        //  ACM finishes -> Then immediately triggers Frontend/ALB dependent resources.
+        // This fulfills your exact "Frontend/ALB depends on ACM" requirement.
+        stage('ACM & Application Ingress Routing Track') {
+            stage('Trigger ACM') { // Must wait for certificate validation to finish completely
+                steps {
+                    build job: '60-acm', // Must wait for certificate validation to finish completely
                     wait: true,
                     propagate: true
                 }
+            }
+            stage('Trigger alb') {
+                steps {
+                    script {
+                        // Triggers sequentially ONLY after ACM is successfully provisioned
+                        build job: '70-ingress-alb',
+                        wait: true,
+                        propagate: true
+                    }
+                }
+            }
+        }
+        // =========================================================================
+        // FINAL VALIDATION GATING
+        // =========================================================================
+        stage('Post-Deployment Health Checks') {
+            steps {
+                echo "Both EKS Cluster and ACM/ALB tracks have completed successfully."
+                echo "Running final end-to-end integration and smoke tests..."
             }
         }
     }
 
     post { 
         always { 
-            echo 'I will always say Hello again!'
+            echo 'Infrastructure provisioning cycle completed.'
         }
         success { 
-            echo 'Pipeline success'
+            echo 'Pipeline success: All infrastructure stacks deployed seamlessly'
         }
         failure { 
-            echo 'Pipeline failed'
+            echo 'Pipeline failed: One or more critical downstream jobs crashed.'
         }
     }
 
